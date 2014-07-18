@@ -1,17 +1,166 @@
 Option Explicit
 
+'***** User defined constands
+Const wsnmDataIn As String = "DataInput"
+Const rgnmDataInRange As String = "A1:AI10000"
+Const wsnmDataOut1 As String = "T1"
+Const wsnmDataOut2 As String = "T2"
+Const wsnmDataOut3 As String = "T3"
+
+'***** User defined type T1
+Public Type T1
+  WeekRegel As String
+  Agent As String
+  IDextern As String
+  IDpersoonlijk As String
+  EmailAdres As String
+  EmailTaal As String
+  DatumGebruikt As String
+  WerkStatus As String
+  GegarandeerdWerk As String
+  UrenMin As String
+  UrenMax As String
+  DagenMaxOpeenvolgend As String
+  MinTijdTussenDienst As String
+End Type
+
+'**** User defined type T2
+
+Public Type T2
+  Agent As String
+  Skills As String
+  Level As Integer
+  Gereserveerd As String
+  Datum As String
+End Type
 
 
-Sub beschikbaarheidsTransformer()
+ 
 
-Dim wbThis As Workbook
-Dim wsInput As Worksheet
-Dim wsOutput As Worksheet
+Sub beschikbaarheidsTransformerT1()
 
+  Dim wbThis As Workbook
+  Dim wsInput As Worksheet
+  Dim wsOutput1 As Worksheet
+  Dim wsOutput2 As Worksheet
+  Dim wsOutput3 As Worksheet
+  
+  Dim dDataIn As Variant
+  Dim dDataOut1(300) As T1
+  Dim dDataOut2(4000) As T2
+  Dim dDataout3 As Variant
 
+  Dim CounterAgent As Integer
+  Dim CounterAgentAgents As Integer
+  Dim FirstAgent As Integer
+  Dim NextAgent As Integer
+  Dim LastRow As Integer
+  Dim TotAgents As Integer
+  Dim AgentsRows(300) As Integer
+  
+  
+  Set wbThis = ThisWorkbook
+  
+  Set wsInput = wbThis.Worksheets(wsnmDataIn)
+  Set wsOutput1 = wbThis.Worksheets(wsnmDataOut1)
+  dDataIn = wsInput.Range(rgnmDataInRange)
+  
+  LastRow = wsInput.Range("b20000").End(xlUp).row
+  TotAgents = 0
+  For CounterAgent = 1 To LastRow
+    If (InStr(1, dDataIn(CounterAgent, 3), "Agent:", vbBinaryCompare) > 0) Then
+      TotAgents = TotAgents + 1
+      AgentsRows(TotAgents) = CounterAgent
+    End If
+  Next CounterAgent
+  AgentsRows(TotAgents + 1) = LastRow
+  
+  For CounterAgentAgents = 1 To TotAgents
+  For CounterAgent = AgentsRows(CounterAgentAgents) - 1 To AgentsRows(CounterAgentAgents + 1)
+    'Agent
+    If (InStr(1, dDataIn(CounterAgent, 3), "Agent", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).Agent = dDataIn(CounterAgent, 3)
+    End If
+    'Weekregel
+    If (InStr(1, dDataIn(CounterAgent, 3), "Weekregel", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).WeekRegel = dDataIn(CounterAgent, 3)
+    End If
+    'IDExtern
+    If (InStr(1, dDataIn(CounterAgent, 3), "Externe ID", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).IDextern = dDataIn(CounterAgent, 3)
+    End If
+    'IDpersoonlijk
+    If (InStr(1, dDataIn(CounterAgent, 3), "Persoonlijke ID", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).IDpersoonlijk = dDataIn(CounterAgent, 3)
+    End If
+    'Emailadres
+    If (InStr(1, dDataIn(CounterAgent, 3), "E-mailadres", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).EmailAdres = dDataIn(CounterAgent, 3)
+    End If
+    'Taal email
+    If (InStr(1, dDataIn(CounterAgent, 3), "Taal e-mail", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).EmailTaal = dDataIn(CounterAgent, 3)
+    End If
+    'Gebruikte datums
+    If (InStr(1, dDataIn(CounterAgent, 4), "Gebruikte datums", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).DatumGebruikt = dDataIn(CounterAgent, 4)
+    End If
+    'Werkstatus
+    If (InStr(1, dDataIn(CounterAgent, 6), "Werkstatus", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).WerkStatus = dDataIn(CounterAgent, 6)
+    End If
+    'Gegarandeerd werken
+    If (InStr(1, dDataIn(CounterAgent, 6), "Gegarandeerd", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).GegarandeerdWerk = dDataIn(CounterAgent, 6)
+    End If
+    'Uren minimum
+    If (InStr(1, dDataIn(CounterAgent, 6), "Minimumaantal uren:", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).UrenMin = Mid(dDataIn(CounterAgent, 6), InStr(17, dDataIn(CounterAgent, 6), " ", vbTextCompare) + 1, 100)
+    End If
+    'Uren maximum
+    If (InStr(1, dDataIn(CounterAgent, 6), "Maximumaantal uren:", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).UrenMax = Mid(dDataIn(CounterAgent, 6), InStr(17, dDataIn(CounterAgent, 6), " ", vbTextCompare) + 1, 100)
+    End If
+    'DagenMaxOpeenvolgend
+    If (InStr(1, dDataIn(CounterAgent, 6), "Maximum aaneengesl:", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).DagenMaxOpeenvolgend = dDataIn(CounterAgent, 6)
+    End If
+    'Uren MinTijdTussenDienst
+    If (InStr(1, dDataIn(CounterAgent, 6), "Minimum ijd tussen", vbTextCompare) > 0) Then
+      dDataOut1(CounterAgentAgents).MinTijdTussenDienst = dDataIn(CounterAgent, 6)
+    End If
+    
+  Next CounterAgent
+  Next CounterAgentAgents
+  
+ 
+  wsOutput1.Range("a2:m1000").Clear
+  For CounterAgent = 2 To TotAgents
+    wsOutput1.Cells(CounterAgent, 1) = dDataOut1(CounterAgent - 1).Agent
+    wsOutput1.Cells(CounterAgent, 2) = dDataOut1(CounterAgent - 1).WeekRegel
+    wsOutput1.Cells(CounterAgent, 3) = dDataOut1(CounterAgent - 1).DagenMaxOpeenvolgend
+    wsOutput1.Cells(CounterAgent, 4) = dDataOut1(CounterAgent - 1).DatumGebruikt
+    wsOutput1.Cells(CounterAgent, 5) = dDataOut1(CounterAgent - 1).EmailAdres
+    wsOutput1.Cells(CounterAgent, 6) = dDataOut1(CounterAgent - 1).EmailTaal
+    wsOutput1.Cells(CounterAgent, 7) = dDataOut1(CounterAgent - 1).GegarandeerdWerk
+    wsOutput1.Cells(CounterAgent, 8) = dDataOut1(CounterAgent - 1).IDextern
+    wsOutput1.Cells(CounterAgent, 9) = dDataOut1(CounterAgent - 1).IDpersoonlijk
+    wsOutput1.Cells(CounterAgent, 10) = dDataOut1(CounterAgent - 1).MinTijdTussenDienst
+    wsOutput1.Cells(CounterAgent, 11) = dDataOut1(CounterAgent - 1).UrenMin
+    wsOutput1.Cells(CounterAgent, 12) = dDataOut1(CounterAgent - 1).UrenMax
+    wsOutput1.Cells(CounterAgent, 13) = dDataOut1(CounterAgent - 1).WerkStatus
+  Next CounterAgent
 
-
-
+'**** Write table T2 to worksheet
+  wsOutput2.Range("a2:m1000").Clear
+  For CounterAgent = 2 To 3000
+    wsOutput2.Cells(CounterAgent, 1) = dDataOut2(CounterAgent - 1).Agent
+    wsOutput2.Cells(CounterAgent, 2) = dDataOut2(CounterAgent - 1).Datum
+    wsOutput2.Cells(CounterAgent, 3) = dDataOut2(CounterAgent - 1).Gereserveerd
+    wsOutput2.Cells(CounterAgent, 4) = dDataOut2(CounterAgent - 1).Level
+    wsOutput2.Cells(CounterAgent, 5) = dDataOut2(CounterAgent - 1).Skills
+  Next CounterAgent
 
 
 End Sub
+
