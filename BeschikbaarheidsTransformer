@@ -1,0 +1,17 @@
+Option Explicit
+
+
+
+Sub beschikbaarheidsTransformer()
+
+Dim wbThis As Workbook
+Dim wsInput As Worksheet
+Dim wsOutput As Worksheet
+
+
+
+
+
+
+
+End Sub
